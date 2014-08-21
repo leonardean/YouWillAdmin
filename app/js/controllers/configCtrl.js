@@ -1,18 +1,18 @@
 /**
  * Created by leonardo on 21/08/2014.
  */
-app.controller('configCtrl', function($scope, $rootScope, $route) {
+app.controller('configCtrl', function($scope) {
 
   $scope.init = function() {
     $scope.virgin = undefined;
-//    $scope.configure = $rootScope.configure;
+    $scope.pageLoading = true;
+    $scope.loading = false;
+    $scope.noticeShow = false;
+    $scope.configurePrev = {};
     $scope.loadConfig();
   }
 
-  $scope.saveConfig = function() {
-    var appBucket = Kii.bucketWithName("configure");
-    var obj = appBucket.createObject();
-
+  $scope.setObj = function(obj){
     obj.set("paypalClientID", $scope.configure.paypalClientID);
     obj.set("paypalSecret", $scope.configure.paypalSecret);
     obj.set("paypalSandbox", $scope.configure.paypalSandbox);
@@ -23,6 +23,9 @@ app.controller('configCtrl', function($scope, $rootScope, $route) {
     obj.set("iapSecurityKey", $scope.configure.iapSecurityKey);
     obj.save({
       success: function(theObject) {
+        $scope.loading = false;
+        $scope.noticeShow = true;
+        $scope.$apply();
         console.log("Object saved!");
         console.log(theObject);
       },
@@ -32,19 +35,34 @@ app.controller('configCtrl', function($scope, $rootScope, $route) {
     });
   }
 
+  $scope.saveConfig = function() {
+    $scope.loading = true;
+    $scope.noticeShow = false;
+    if ($scope.virgin == true) {
+      var appBucket = Kii.bucketWithName("configure");
+      var obj = appBucket.createObject();
+      $scope.setObj(obj);
+    } else if ($scope.virgin == false) {
+      var obj = KiiObject.objectWithURI($scope.currentConfigURI);
+      $scope.setObj(obj);
+    }
+  }
+
   $scope.loadConfig = function() {
     var bucket = Kii.bucketWithName("configure");
     var query = KiiQuery.queryWithClause();
 
     var queryCallbacks = {
       success: function(queryPerformed, resultSet, nextQuery) {
+        $scope.pageLoading = false;
         if (resultSet.length == 0) {
           console.log('virgin user');
           $scope.configure = {};
           $scope.virgin = true;
           return;
         } else {
-          console.log('whoremaster coming');
+          console.log('whoremaster coming with ' + resultSet.length + ' configs');
+          $scope.currentConfigURI = resultSet[0].objectURI();
           $scope.virgin = false;
           var configure = {
             paypalClientID: resultSet[0].get('paypalClientID'),
@@ -57,7 +75,8 @@ app.controller('configCtrl', function($scope, $rootScope, $route) {
             iapSecurityKey: resultSet[0].get('iapSecurityKey')
           };
           $scope.configure = configure;
-          console.log($scope.configure);
+          $scope.configurePrev = JSON.parse(JSON.stringify(configure));
+          $scope.$apply();
         }
         if(nextQuery != null) {
           bucket.executeQuery(nextQuery, queryCallbacks);
@@ -67,12 +86,11 @@ app.controller('configCtrl', function($scope, $rootScope, $route) {
         console.log('error querying config data', anErrorString)
       }
     }
-
     bucket.executeQuery(query, queryCallbacks);
   }
 
   $scope.restoreConfig = function() {
-
+    console.log('config restored to previous')
+    $scope.configure = $scope.configurePrev;
   }
-
 })

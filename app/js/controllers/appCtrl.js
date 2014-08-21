@@ -1,7 +1,7 @@
 /**
  * Created by leonardo on 21/08/2014.
  */
-app.controller('appCtrl', function ($scope, $route, $rootScope, localStorageService) {
+app.controller('appCtrl', function ($scope, localStorageService) {
   $scope.init = function () {
     $scope.selected = 0;
     $scope.stranger = true;
@@ -13,11 +13,10 @@ app.controller('appCtrl', function ($scope, $route, $rootScope, localStorageServ
         success: function (theUser) {
           $scope.loggingIn = false;
           console.log("user authenticated by access token login!");
-          $route.reload();
-          $scope.loadConfig();
           console.log(theUser);
           $scope.stranger = false;
           $scope.currentUserName = theUser.getUsername();
+          $scope.$apply();
         },
         failure: function (theUser, errorString) {
           console.log("error authenticating: " + errorString);
@@ -74,10 +73,10 @@ app.controller('appCtrl', function ($scope, $route, $rootScope, localStorageServ
       success: function (theUser) {
         console.log("user authenticated by username/password login!");
         console.log(theUser);
-        $route.reload();
         $scope.loggingIn = false;
         $scope.stranger = false;
         $scope.currentUserName = theUser.getUsername();
+        $scope.$apply();
         var accessToken = KiiUser.getCurrentUser().getAccessToken();
         localStorageService.set("accessToken", accessToken);
       },
@@ -89,45 +88,6 @@ app.controller('appCtrl', function ($scope, $route, $rootScope, localStorageServ
 
   $scope.doLogout = function(){
     KiiUser.logOut();
-    $route.reload();
     $scope.stranger = true;
-  }
-
-  $scope.loadConfig = function() {
-    var bucket = Kii.bucketWithName("configure");
-    var query = KiiQuery.queryWithClause();
-
-    var queryCallbacks = {
-      success: function(queryPerformed, resultSet, nextQuery) {
-        if (resultSet.length == 0) {
-          console.log('virgin user');
-          $scope.configure = {};
-          $scope.virgin = true;
-          return;
-        } else {
-          console.log('whoremaster coming');
-          $scope.virgin = false;
-          var configure = {
-            paypalClientID: resultSet[0].get('paypalClientID'),
-            paypalSecret: resultSet[0].get('paypalSecret'),
-            paypalSandbox: resultSet[0].get('paypalSandbox'),
-            paypalSandboxSecret: resultSet[0].get('paypalSandboxSecret'),
-            alipayPartnerID: resultSet[0].get('alipayPartnerID'),
-            alipayRSAPrivateKey: resultSet[0].get('alipayRSAPrivateKey'),
-            alipaySecurityKey: resultSet[0].get('alipaySecurityKey'),
-            iapSecurityKey: resultSet[0].get('iapSecurityKey')
-          };
-          $rootScope.configure = configure;
-        }
-        if(nextQuery != null) {
-          bucket.executeQuery(nextQuery, queryCallbacks);
-        }
-      },
-      failure: function(queryPerformed, anErrorString) {
-        console.log('error querying config data', anErrorString)
-      }
-    }
-
-    bucket.executeQuery(query, queryCallbacks);
   }
 })
