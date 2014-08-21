@@ -1,9 +1,9 @@
-<form class="form-horizontal" role="form" style="margin-top: 40px">
+<form class="form-horizontal" role="form" style="margin-top: 40px" ng-init="init()">
   <div class="form-group col-sm-12">
     <label class="col-sm-4 control-label">Paypal ClientID</label>
 
     <div class="col-sm-4">
-      <input required  type="text" class="form-control" ng-model="configure.paypalClientID">
+      <input required  type="text" id="demo" class="form-control" ng-model="configure.paypalClientID">
     </div>
   </div>
   <div class="form-group col-sm-12">

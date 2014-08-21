@@ -22,14 +22,21 @@ angular.module('myApp.controllers', [])
     }
 
     $scope.navItems = [{
+        link: '#/welcome',
+        display: 'Welcome',
+        shy: false
+      },{
         link: '#/config',
-        display: 'Configuration'
+        display: 'Configuration',
+        shy: true
       }, {
         link: '#/productManagement',
-        display: 'Product Management'
+        display: 'Product Management',
+        shy: true
       }, {
         link: '#/transaction',
-        display: 'Transaction'
+        display: 'Transaction',
+        shy: true
       }
     ];
 
