@@ -1,15 +1,19 @@
 /**
  * Created by leonardo on 21/08/2014.
  */
-app.controller('configCtrl', function($scope) {
+app.controller('configCtrl', function($scope, $rootScope, $location) {
 
   $scope.init = function() {
-    $scope.virgin = undefined;
-    $scope.pageLoading = true;
-    $scope.loading = false;
-    $scope.noticeShow = false;
-    $scope.configurePrev = {};
-    $scope.loadConfig();
+    if($rootScope.logged != true) {
+      $location.path("#/welcome");
+    } else {
+      $scope.virgin = undefined;
+      $scope.pageLoading = true;
+      $scope.loading = false;
+      $scope.noticeShow = false;
+      $scope.configurePrev = {};
+      $scope.loadConfig();
+    }
   }
 
   $scope.setObj = function(obj){
@@ -63,6 +67,7 @@ app.controller('configCtrl', function($scope) {
         } else {
           console.log('whoremaster coming with ' + resultSet.length + ' configs');
           $scope.currentConfigURI = resultSet[0].objectURI();
+          console.log(resultSet[0]._customInfo)
           $scope.virgin = false;
           var configure = {
             paypalClientID: resultSet[0].get('paypalClientID'),

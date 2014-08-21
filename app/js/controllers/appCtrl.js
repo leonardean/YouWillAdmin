@@ -1,7 +1,7 @@
 /**
  * Created by leonardo on 21/08/2014.
  */
-app.controller('appCtrl', function ($scope, localStorageService) {
+app.controller('appCtrl', function ($scope, localStorageService, $rootScope) {
   $scope.init = function () {
     $scope.selected = 0;
     $scope.stranger = true;
@@ -16,6 +16,7 @@ app.controller('appCtrl', function ($scope, localStorageService) {
           console.log(theUser);
           $scope.stranger = false;
           $scope.currentUserName = theUser.getUsername();
+          $rootScope.logged = true;
           $scope.$apply();
         },
         failure: function (theUser, errorString) {
@@ -38,7 +39,7 @@ app.controller('appCtrl', function ($scope, localStorageService) {
     },
     {
       link: '#/productManagement',
-      display: 'Product Management',
+      display: 'Product',
       shy: true
     },
     {
@@ -76,6 +77,7 @@ app.controller('appCtrl', function ($scope, localStorageService) {
         $scope.loggingIn = false;
         $scope.stranger = false;
         $scope.currentUserName = theUser.getUsername();
+        $rootScope.logged = true;
         $scope.$apply();
         var accessToken = KiiUser.getCurrentUser().getAccessToken();
         localStorageService.set("accessToken", accessToken);
