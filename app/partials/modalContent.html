@@ -16,10 +16,14 @@
       <div row>
         <div class="col-sm-4">
           <div class="gallery-box">
-            <span class="title">{{uploader.flow.files[0].name}}</span>
+            <span ng-show="uploader.flow.files.length" class="title">{{uploader.flow.files[0].name}}</span>
 
-            <div class="thumbnail" ng-show="!uploader.flow.files.length">
+            <div class="thumbnail" ng-show="!uploader.flow.files.length && virgin">
               <img src="http://www.placehold.it/200x150/EFEFEF/AAAAAA&text=no+image"/>
+            </div>
+            <div class="thumbnail" ng-show="!uploader.flow.files.length && !virgin">
+              <img ng-src="{{productImgURL}}"ng-hide="imgLoading" imageonload>
+              <i class="fa fa-spin fa-spinner fa-3x text-center" data-ng-show="imgLoading" style="margin-top: 60px"></i>
             </div>
             <div class="thumbnail" ng-show="uploader.flow.files.length">
               <img flow-img="uploader.flow.files[0]"/>
@@ -94,7 +98,8 @@
     <p>Please fill in all the blankets </p>
   </div>
   <div class="modal-footer">
-    <button style="width: 100px" class="btn btn-primary" ng-click="create()"><span ng-show="!btnLoading">Create</span><i class="fa fa-spinner fa-spin" ng-show="btnLoading"></i></button>
+    <button ng-show="virgin" style="width: 100px" class="btn btn-primary" ng-click="create()"><span ng-show="!btnLoading">Create</span><i class="fa fa-spinner fa-spin" ng-show="btnLoading"></i></button>
+    <button ng-show="!virgin" style="width: 100px" class="btn btn-primary" ng-click="create()"><span ng-show="!btnLoading">Save</span><i class="fa fa-spinner fa-spin" ng-show="btnLoading"></i></button>
     <button style="width: 100px" class="btn btn-warning" ng-click="cancel()">Cancel</button>
   </div>
 </div>

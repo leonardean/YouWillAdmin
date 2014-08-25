@@ -11,25 +11,18 @@ app.controller('productManagementCtrl', function($scope, $rootScope, $location, 
       $scope.maxSize = 10;
       $scope.pageLimit = 10;
       $scope.loadProduct();
+      $scope.fields = [
+        {name: "ProductID", value: "productID"},
+        {name: "Name", value: "name"},
+        {name: "Category", value: "category"},
+        {name: "Price", value: "price"},
+        {name: "New", value: "new"},
+        {name: "Recommended", value: "recommended"},
+        {name: "Consumable", value: "consumable"},
+        {name: "Valid", value: "valid"}
+      ]
     }
   }
-
-  $scope.showProduct = function(product) {
-    console.log("product detail showing ", product);
-
-  }
-
-  $scope.fields = [
-    {name: "ProductID", value: "productID"},
-    {name: "Name", value: "name"},
-//    {name: "Description", value: "description"},
-    {name: "Category", value: "category"},
-    {name: "Price", value: "price"},
-    {name: "New", value: "new"},
-    {name: "Recommended", value: "recommended"},
-    {name: "Consumable", value: "consumable"},
-    {name: "Valid", value: "valid"}
-  ]
 
   $scope.loadProduct = function () {
     var bucket = Kii.bucketWithName("product");
@@ -72,44 +65,93 @@ app.controller('productManagementCtrl', function($scope, $rootScope, $location, 
       }
     }
     bucket.executeQuery(query, queryCallbacks);
-
   }
 
-  $scope.openModal = function (size) {
+  $scope.openModal = function (product) {
     var modalInstance = $modal.open({
       templateUrl: './partials/modalContent.html',
       controller: ModalInstanceCtrl,
       size: "lg",
       backdrop: 'static',
-      resolve: {}
+      resolve: product ? {
+        product: function(){
+          return product
+        }
+      } : {
+        product: function(){
+          return undefined
+        }
+      }
     });
 
     modalInstance.result.then(function (selectedItem) {
       console.log("modal closed and returned to product")
       $scope.loadProduct();
+      $scope.loading = true;
       $scope.selected = selectedItem;
     }, function () {
       $log.info('Modal dismissed at: ' + new Date());
     });
   };
 
-  var ModalInstanceCtrl = function ($scope, $modalInstance) {
+  var ModalInstanceCtrl = function ($scope, $modalInstance, product) {
     $scope.init = function() {
-      $scope.product = {
-        new: false,
-        recommended: false,
-        consumable: false,
-        valid: false
-      };
-      $scope.title = "New Product";
+      if (product){
+        console.log('see you again')
+        $scope.imgLoading = true;
+        $scope.product = product._customInfo;
+        $scope.virgin = false;
+        $scope.title = "Product Info";
+        console.log(product)
+        console.log(product.getBodyContentType())
+        $scope.loadProductImg();
+      } else {
+        $scope.virgin = true;
+        $scope.product = {
+          new: false,
+          recommended: false,
+          consumable: false,
+          valid: false
+        };
+        $scope.title = "New Product";
+      }
       $scope.uploader = {};
       $scope.btnLoading = false;
     }
 
+    $scope.loadProductImg = function() {
+      product.publishBody({
+        success: function(obj, publishedUrl) {
+          $scope.productImgURL = publishedUrl;
+          console.log("load img done: ", publishedUrl)
+          $scope.$apply();
+        },
+        failure: function(obj, anErrorString) {
+          console.log(anErrorString);
+          $scope.productImgURL = "http://www.placehold.it/200x150/EFEFEF/AAAAAA&text=no+image";
+          $scope.$apply();
+        }
+      });
+    }
+
+    $scope.uploadBody = function(theObject){
+      var srcData = new Blob([$scope.uploader.flow.files[0].file], {type: $scope.uploader.flow.files[0].file.type});
+      theObject.uploadBody(srcData, {
+        success: function(obj) {
+          console.log("Object and body saved!");
+          console.log(theObject);
+          $scope.btnLoading = false;
+          $modalInstance.close();
+        },
+        failure: function(obj, anErrorString) {
+          console.log("Error saving object: " + errorString);
+        }
+      })
+    }
     $scope.create = function () {
       $scope.btnLoading = true;
       var appBucket = Kii.bucketWithName("product");
-      var obj = appBucket.createObject();
+      var obj = ($scope.virgin == true) ? appBucket.createObject() : product;
       obj.set("productID", $scope.product.productID);
       obj.set("name", $scope.product.name);
       obj.set("description", $scope.product.description);
@@ -122,24 +164,19 @@ app.controller('productManagementCtrl', function($scope, $rootScope, $location, 
 
       obj.save({
         success: function(theObject) {
-          var srcData = new Blob([$scope.uploader.flow.files[0].file]);
-          theObject.uploadBody(srcData, {
-            success: function(obj) {
-              console.log("Object and body saved!");
-              console.log(theObject);
-              $scope.btnLoading = false;
-              $modalInstance.close();
-            },
-            failure: function(obj, anErrorString) {
-              console.log("Error saving object: " + errorString);
-            }
-          })
+          if ($scope.uploader.flow.files.length){
+            $scope.uploadBody(theObject);
+          } else {
+            console.log("Object saved!");
+            console.log(theObject);
+            $scope.btnLoading = false;
+            $modalInstance.close();
+          }
         },
         failure: function(theObject, errorString) {
           console.log("Error saving object: " + errorString);
         }
       });
-      console.log($scope.uploader.flow.files[0].file)
     };
 
     $scope.cancel = function () {

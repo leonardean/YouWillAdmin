@@ -15,7 +15,7 @@
       <table width="100%" class="table table-bordered table-striped table-hover" style="margin-bottom: -0px">
         <thead><tr><th ng-repeat="field in fields" style="width: 12.25%">{{field.name}}</th></tr></thead>
         <tbody>
-        <tr ng-repeat="product in products[currentPage - 1]" style="cursor: pointer" ng-click="showProduct(product)">
+        <tr ng-repeat="product in products[currentPage - 1]" style="cursor: pointer" ng-click="openModal(product)">
           <td ng-repeat="field in fields" style="width: 12.25%">{{product._customInfo[field.value]}}</td>
         </tr>
         </tbody>
