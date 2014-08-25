@@ -8,7 +8,8 @@ var app = angular.module('myApp', [
   'myApp.services',
   'myApp.directives',
   'ui.bootstrap',
-  'LocalStorageModule'
+  'LocalStorageModule',
+  'flow'
 ]).
 config(['$routeProvider', function($routeProvider) {
   $routeProvider.when('/config', {templateUrl: 'partials/config.html', controller: 'configCtrl'});
