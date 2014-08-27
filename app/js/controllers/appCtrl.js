@@ -6,6 +6,7 @@ app.controller('appCtrl', function ($scope, localStorageService, $rootScope) {
     $scope.selected = 0;
     $scope.stranger = true;
     $scope.loggingIn = false;
+    $scope.loginError = false;
     var accessToken = localStorageService.get("accessToken");
     if (accessToken) {
       $scope.loggingIn = true;
@@ -63,6 +64,10 @@ app.controller('appCtrl', function ($scope, localStorageService, $rootScope) {
       },
       failure: function (theUser, errString) {
         console.log("error authenticating: " + errString);
+        $scope.loginError = true;
+        $scope.errorMsg = errString;
+        $scope.loggingIn = false;
+        $scope.$apply();
       }
     })
   }
@@ -84,6 +89,10 @@ app.controller('appCtrl', function ($scope, localStorageService, $rootScope) {
       },
       failure: function (theUser, errorString) {
         console.log("error authenticating: " + errorString);
+        $scope.loginError = true;
+        $scope.errorMsg = "Error Authenticating: " + errorString;
+        $scope.loggingIn = false;
+        $scope.$apply();
       }
     });
   };

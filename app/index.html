@@ -55,8 +55,10 @@
             <a ng-href="{{navItem.link}}"><span ng-bind='navItem.display'></span></a>
           </li>
         </ul>
+
         <form class="navbar-form navbar-right" ng-show="stranger && !loggingIn">
           <div class="form-group">
+            <label style="color: red" ng-show="loginError">{{errorMsg}}</label>
             <input required type="text" class="form-control" ng-model="loginForm.userName" placeholder="User Name">
             <input required type="password" class="form-control" ng-model="loginForm.password" placeholder="Password">
           </div>
