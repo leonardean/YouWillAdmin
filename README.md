@@ -1,7 +1,7 @@
 #YouWill Admin Portal
 ##Guide for Deployment
 ###Things you need to install before deployment
-####1. [NodeJs](http://nodejs.org/)
+####1. install [NodeJs](http://nodejs.org/)
 ####2. install bower locally
 `npm install -g bower`
 ####3. install forever locally
