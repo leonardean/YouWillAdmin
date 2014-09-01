@@ -116,6 +116,7 @@ app.controller('productManagementCtrl', function($scope, $rootScope, $location, 
         $scope.title = "New Product";
       }
       $scope.uploader = {};
+      $scope.alertShow = false
       $scope.btnLoading = false;
     }
 
@@ -149,34 +150,39 @@ app.controller('productManagementCtrl', function($scope, $rootScope, $location, 
       })
     }
     $scope.create = function () {
-      $scope.btnLoading = true;
-      var appBucket = Kii.bucketWithName("product");
-      var obj = ($scope.virgin == true) ? appBucket.createObject() : product;
-      obj.set("productID", $scope.product.productID);
-      obj.set("name", $scope.product.name);
-      obj.set("description", $scope.product.description);
-      obj.set("category", $scope.product.category);
-      obj.set("price", $scope.product.price);
-      obj.set("new", $scope.product.new);
-      obj.set("recommended", $scope.product.recommended);
-      obj.set("consumable", $scope.product.consumable);
-      obj.set("valid", $scope.product.valid);
+      if (Object.keys($scope.product).length == 9) {
+        console.log($scope.product)
+        $scope.btnLoading = true;
+        var appBucket = Kii.bucketWithName("product");
+        var obj = ($scope.virgin == true) ? appBucket.createObject() : product;
+        obj.set("productID", $scope.product.productID);
+        obj.set("name", $scope.product.name);
+        obj.set("description", $scope.product.description);
+        obj.set("category", $scope.product.category);
+        obj.set("price", $scope.product.price);
+        obj.set("new", $scope.product.new);
+        obj.set("recommended", $scope.product.recommended);
+        obj.set("consumable", $scope.product.consumable);
+        obj.set("valid", $scope.product.valid);
 
-      obj.save({
-        success: function(theObject) {
-          if ($scope.uploader.flow.files.length){
-            $scope.uploadBody(theObject);
-          } else {
-            console.log("Object saved!");
-            console.log(theObject);
-            $scope.btnLoading = false;
-            $modalInstance.close();
+        obj.save({
+          success: function (theObject) {
+            if ($scope.uploader.flow.files.length) {
+              $scope.uploadBody(theObject);
+            } else {
+              console.log("Object saved!");
+              console.log(theObject);
+              $scope.btnLoading = false;
+              $modalInstance.close();
+            }
+          },
+          failure: function (theObject, errorString) {
+            console.log("Error saving object: " + errorString);
           }
-        },
-        failure: function(theObject, errorString) {
-          console.log("Error saving object: " + errorString);
-        }
-      });
+        });
+      } else {
+        $scope.alertShow = true;
+      }
     };
 
     $scope.cancel = function () {
