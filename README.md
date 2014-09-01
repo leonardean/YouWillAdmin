@@ -8,6 +8,7 @@
 `npm install -g forever`
 ####4. install dependencies
 clone the project by `git clone <project_url>`
+
 `cd` to the directory of this project folder and run:
 * `npm install` and 
 * `bower install --allow-root`
