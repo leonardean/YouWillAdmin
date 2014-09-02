@@ -19,5 +19,5 @@ config(['$routeProvider', function($routeProvider) {
   $routeProvider.otherwise({redirectTo: '/welcome'});
 }]);
 
-Kii.initializeWithSite("079d0279", "06c8dd6aefd1471d2bca3320ff6eade8", KiiSite.CN);
+Kii.initializeWithSite("c99e04f1", "3ebdc0472c0c705bc50eaf1756061b8b", KiiSite.CN);
 console.log('Kii sdk initialized')

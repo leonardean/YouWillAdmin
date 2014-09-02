@@ -55,6 +55,9 @@ app.controller('transactionCtrl', function($scope, $rootScope, $modal, $location
           $scope.transactions.push(transactionsSinglePage);
           $scope.loading = false;
           $scope.$apply();
+        } else {
+          $scope.loading = false;
+          $scope.$apply();
         }
         if(nextQuery != null) {
           console.log('has next');

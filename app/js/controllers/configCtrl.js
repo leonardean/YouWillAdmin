@@ -63,7 +63,7 @@ app.controller('configCtrl', function($scope, $rootScope, $location) {
           console.log('virgin user');
           $scope.configure = {};
           $scope.virgin = true;
-          return;
+          $scope.$apply();
         } else {
           console.log('whoremaster coming with ' + resultSet.length + ' configs');
           $scope.currentConfigURI = resultSet[0].objectURI();
